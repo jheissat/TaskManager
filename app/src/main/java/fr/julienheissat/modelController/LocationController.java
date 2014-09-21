@@ -1,10 +1,7 @@
-package fr.julienheissat.ui.activity;
+package fr.julienheissat.modelController;
 
 import android.annotation.SuppressLint;
-import android.app.ListActivity;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentSender;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -12,147 +9,116 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.ListView;
-import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 import fr.julienheissat.application.TaskManagerApplication;
 import fr.julienheissat.taskmanager.R;
-import fr.julienheissat.ui.adapter.TaskListAdapter;
 import fr.julienheissat.utils.LocationUtils;
+import fr.julienheissat.utils.PlayConnectionService;
 
-import static fr.julienheissat.utils.Constants.CONNECTION_FAILURE_RESOLUTION_REQUEST;
-
-
-public class ViewTasksActivity extends ListActivity implements
+/**
+ * Created by juju on 20/09/2014.
+ */
+public class LocationController implements
         GooglePlayServicesClient.ConnectionCallbacks,
         GooglePlayServicesClient.OnConnectionFailedListener,
-        LocationListener,
-        View.OnClickListener
+        LocationListener
+
 
 {
-
-    private TaskManagerApplication app;
-    private TaskListAdapter adapter;
-
-    private ProgressBar mActivityIndicator;
-    private TextView mAddress;
-
-
+    private final TaskManagerApplication app;
+    private ArrayList<LocationControllerListener> listOfListener;
     private LocationClient mLocationClient;
     private LocationRequest mLocationRequest;
-    private Location mCurrentLocation;
-
-    /*
-    * Lifecycle activity methods
-    */
+    private Location mLatestLocation;
+    private String mLatestAddress;
 
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState)
+    public LocationController(TaskManagerApplication app)
     {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        setUpViews();
 
+        this.app = app;
 
-        app = (TaskManagerApplication) getApplication();
-        adapter = new TaskListAdapter(app.getTaskList(), this);
-        setListAdapter(adapter);
-
-
-        mAddress = (TextView) findViewById(R.id.address);
-        mActivityIndicator = (ProgressBar) findViewById(R.id.address_progress);
+        listOfListener = new ArrayList<LocationControllerListener>();
 
         mLocationRequest = LocationRequest.create().setInterval(LocationUtils.UPDATE_INTERVAL_IN_MILLISECONDS)
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                 .setFastestInterval(LocationUtils.FAST_INTERVAL_CEILING_IN_MILLISECONDS);
 
-        mLocationClient = new LocationClient(this, this, this);
-    }
+        mLocationClient = new LocationClient(app, this, this);
 
-    @Override
-    protected void onStart()
-    {
-        super.onStart();
-        // Connect the client.
         mLocationClient.connect();
 
     }
 
-    @Override
-    public void onPause()
-    {
-        super.onPause();
-        stopUpdates();
-    }
-
-    @Override
-    protected void onResume()
-    {
-        super.onResume();
-        adapter.forceReload();
-    }
-
-
-    @Override
-    protected void onStop()
-    {
-        super.onStop();
-        // Disconnecting the client invalidates it.
-        mLocationClient.disconnect();
-
-    }
-
-
-    public void startUpdates()
+    public Location getLocationUpdates()
     {
 
-        if (servicesConnected() && mLocationClient.isConnected())
+        if (PlayConnectionService.servicesConnected(app) && mLocationClient.isConnected())
         {
             mLocationClient.requestLocationUpdates(mLocationRequest, this);
-            mCurrentLocation = mLocationClient.getLastLocation();
+            mLatestLocation = mLocationClient.getLastLocation();
+        }
+
+        return mLatestLocation;
+    }
+
+    public Location getLocation()
+    {
+        if (PlayConnectionService.servicesConnected(app) && mLocationClient.isConnected())
+        {
+            return mLocationClient.getLastLocation();
+        } else
+        {
+            return null;
         }
     }
 
-    public void stopUpdates()
+
+    public void stopLocationUpdates()
     {
-        if (servicesConnected() && mLocationClient.isConnected())
+        if (PlayConnectionService.servicesConnected(app) && mLocationClient.isConnected())
         {
             mLocationClient.removeLocationUpdates(this);
         }
     }
 
-    /*
-    *  GooglePlayServicesClient callback methods (ConnectionCallbacks and failed connection callback)
-    */
+
+    public void disconnect()
+    {
+        mLocationClient.disconnect();
+    }
 
     @Override
     public void onConnected(Bundle bundle)
     {
-        Toast.makeText(this, "Connected", Toast.LENGTH_SHORT).show();
-        startUpdates();
-        getAddress();
+
+        updateAllListenersOnConnection();
+
     }
 
     @Override
     public void onDisconnected()
     {
-        Toast.makeText(this, "Disconnected. Please re-connect.",
-                Toast.LENGTH_SHORT).show();
+
+    }
+
+
+    @Override
+    public void onLocationChanged(Location location)
+    {
+        updateAllListeners();
+
     }
 
 
@@ -161,132 +127,90 @@ public class ViewTasksActivity extends ListActivity implements
     {
         if (connectionResult.hasResolution())
         {
-            try
-            {
-                // Start an Activity that tries to resolve the error
-                connectionResult.startResolutionForResult(
-                        this,
-                        CONNECTION_FAILURE_RESOLUTION_REQUEST);
-                /*
-                 * Thrown if Google Play services canceled the original
-                 * PendingIntent
-                 */
-            } catch (IntentSender.SendIntentException e)
-            {
-                // Log the error
-                e.printStackTrace();
-            }
+
         } else
         {
 
         }
     }
 
-    /*
-    * Method to check if app is connected to Google Play services
-    */
 
-    private boolean servicesConnected()
+    public String getLatestAddress ()
     {
-
-        // Check that Google Play services is available
-        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
-
-        // If Google Play services is available
-        if (ConnectionResult.SUCCESS == resultCode)
-        {
-            // In debug mode, log the status
-            Log.d(LocationUtils.APPTAG, getString(R.string.play_services_available));
-
-            // Continue
-            return true;
-            // Google Play services was not available for some reason
-        } else
-        {
-            // Display an error dialog
-
-        }
-        return false;
+       return mLatestAddress;
     }
-
-    /*
-    *  location listener callback methods
-    */
-
-
-    @Override
-    public void onLocationChanged(Location location)
-
-
-    {
-        mCurrentLocation = location;
-    }
-
-
-   /*
-    *  Methods to retrieve address from location information (using Geocoder)
-    */
 
 
     @SuppressLint("NewApi")
-    public void getAddress()
+    public void queryLatestAddress()
     {
 
         // In Gingerbread and later, use Geocoder.isPresent() to see if a geocoder is available.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD && !Geocoder.isPresent())
         {
             // No geocoder is present. Issue an error message
-            Toast.makeText(this, R.string.no_geocoder_available, Toast.LENGTH_LONG).show();
+            //   Toast.makeText(activity, R.string.no_geocoder_available, Toast.LENGTH_LONG).show();
             return;
         }
 
-        if (servicesConnected())
+        if (PlayConnectionService.servicesConnected(app))
         {
 
             // Get the current location
             Location currentLocation = mLocationClient.getLastLocation();
 
             // Turn the indefinite activity indicator on
-            mActivityIndicator.setVisibility(View.VISIBLE);
+//            mActivityIndicator.setVisibility(View.VISIBLE);
 
             // Start the background task
-            (new ViewTasksActivity.GetAddressTask(this)).execute(currentLocation);
+            new GetAddressTask(app).execute(currentLocation);
         }
     }
 
-    @Override
-    public void onClick(View view)
+    public void updateAllListeners()
     {
-
-        if (view.getId() == R.id.remove_button)
+        for (LocationControllerListener listener : listOfListener)
         {
-            app.getTaskList().removeCompletedTasks();
-        } else if (view.getId() == R.id.add_button)
-        {
-            Intent intent = new Intent(ViewTasksActivity.this, AddTaskActivity.class);
-            startActivity(intent);
+            listener.locationChanged(this);
         }
     }
 
-    private void setUpViews()
+    public void updateAllListenersOnConnection()
     {
-        findViewById(R.id.add_button).setOnClickListener(this);
-
-        findViewById(R.id.remove_button).setOnClickListener(this);
-
+        for (LocationControllerListener listener : listOfListener)
+        {
+            listener.locationControllerConnected(this);
+        }
     }
 
-    @Override
-    protected void onListItemClick(ListView l, View v, int position, long id)
+
+    public void register(LocationControllerListener listener)
+
     {
-        super.onListItemClick(l, v, position, id);
+        if (listOfListener.size() == 0)
+        {
+            getLocationUpdates();
+        }
 
-        // adapter.toggleTaskCompleteAtPosition(position);
-        // Task t = (Task) adapter.getItem(position);
-        // app.saveTask(t);
+        listOfListener.add(listener);
+    }
 
-        app.getTaskList().toggleTask(position);
+    public void unregister(LocationControllerListener listener)
+    {
+        listOfListener.remove(listener);
+    }
 
+    public void unRegisterAll()
+    {
+        listOfListener.removeAll(listOfListener);
+    }
+
+
+    public static interface LocationControllerListener
+    {
+        public void locationChanged(LocationController locationController);
+
+        public void locationControllerConnected(LocationController locationController);
     }
 
     protected class GetAddressTask extends AsyncTask<Location, Void, String>
@@ -321,7 +245,8 @@ public class ViewTasksActivity extends ListActivity implements
             Geocoder geocoder = new Geocoder(localContext, Locale.getDefault());
 
             // Get the current location from the input parameter list
-            Location location = params[0];
+           
+                Location location = params[0];
 
             // Create a list to contain the result address
             List<Address> addresses = null;
@@ -343,20 +268,20 @@ public class ViewTasksActivity extends ListActivity implements
             {
 
                 // Log an error and return an error message
-                Log.e(LocationUtils.APPTAG, getString(R.string.IO_Exception_getFromLocation));
+                Log.e(LocationUtils.APPTAG, app.getString(R.string.IO_Exception_getFromLocation));
 
                 // print the stack trace
                 exception1.printStackTrace();
 
                 // Return an error message
-                return (getString(R.string.IO_Exception_getFromLocation));
+                return (app.getString(R.string.IO_Exception_getFromLocation));
 
                 // Catch incorrect latitude or longitude values
             } catch (IllegalArgumentException exception2)
             {
 
                 // Construct a message containing the invalid arguments
-                String errorString = getString(
+                String errorString = app.getString(
                         R.string.illegal_argument_exception,
                         location.getLatitude(),
                         location.getLongitude()
@@ -378,7 +303,7 @@ public class ViewTasksActivity extends ListActivity implements
                 Address address = addresses.get(0);
 
                 // Format the first line of address
-                String addressText = getString(R.string.address_output_string,
+                String addressText = app.getString(R.string.address_output_string,
 
                         // If there's a street address, add it
                         address.getMaxAddressLineIndex() > 0 ?
@@ -391,13 +316,14 @@ public class ViewTasksActivity extends ListActivity implements
                         address.getCountryName()
                 );
 
+
                 // Return the text
                 return addressText;
 
                 // If there aren't any addresses, post a message
             } else
             {
-                return getString(R.string.no_address_found);
+                return app.getString(R.string.no_address_found);
             }
         }
 
@@ -406,15 +332,14 @@ public class ViewTasksActivity extends ListActivity implements
          * UI element that displays the address. This method runs on the UI thread.
          */
         @Override
-        protected void onPostExecute(String address)
+        protected void onPostExecute(String addressFound)
         {
 
-            // Turn off the progress bar
-            mActivityIndicator.setVisibility(View.GONE);
+            mLatestAddress = addressFound;
+            updateAllListeners();
 
-            // Set the address in the UI
-            mAddress.setText(address);
         }
     }
 
 }
+

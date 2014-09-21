@@ -1,6 +1,5 @@
 package fr.julienheissat.ui.views;
 
-import fr.julienheissat.taskmanager.R;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
@@ -8,7 +7,8 @@ import android.widget.CheckedTextView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import fr.julienheissat.model.Task;
+import fr.julienheissat.modelController.Task;
+import fr.julienheissat.taskmanager.R;
 
 /**
  * Created by juju on 15/09/2014.

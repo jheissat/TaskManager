@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.Address;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -12,11 +13,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import fr.julienheissat.model.Task;
+import fr.julienheissat.application.TaskManagerApplication;
+import fr.julienheissat.modelController.Task;
 import fr.julienheissat.taskmanager.R;
 
 
-public class AddTaskActivity extends TaskManagerActivity
+public class AddTaskActivity extends ActionBarActivity
 {
 
     private static final int REQUEST_CHOOSE_ADDRESS = 0;
@@ -41,9 +43,15 @@ public class AddTaskActivity extends TaskManagerActivity
         String taskName = taskNameEditText.getText().toString();
         Task t = new Task(taskName);
         t.setAddress(address);
-        getTaskManagerApplication().getTaskList().addTask(t);
+        getTaskManagerApplication().getTaskListController().addTask(t);
         finish();
 
+
+    }
+
+    protected TaskManagerApplication getTaskManagerApplication() {
+        TaskManagerApplication tma = (TaskManagerApplication) getApplication();
+        return tma;
 
     }
 
@@ -90,6 +98,7 @@ public class AddTaskActivity extends TaskManagerActivity
 
     private void setUpViews() {
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         taskNameEditText = (EditText) findViewById(R.id.task_name);
         addButton = (Button) findViewById(R.id.add_button);
         cancelButton = (Button) findViewById(R.id.cancel_button);

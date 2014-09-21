@@ -1,4 +1,4 @@
-package fr.julienheissat.model;
+package fr.julienheissat.modelController;
 
 import android.location.Address;
 

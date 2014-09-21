@@ -1,4 +1,4 @@
-package fr.julienheissat.model;
+package fr.julienheissat.modelController;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -17,18 +17,18 @@ import static fr.julienheissat.database.TaskSQLiteOpenHelper.TASK_TABLE;
 /**
  * Created by juju on 18/09/2014.
  */
-public class TaskList
+public class TaskListController
 {
 
     private ArrayList<Task> taskList;
     private SQLiteDatabase database;
-    private ArrayList<IModelListener> adapterListOfListener;
+    private ArrayList<TaskListControllerListener> listOfListener;
 
-    public TaskList(SQLiteDatabase database)
+    public TaskListController(SQLiteDatabase database)
     {
         this.database = database;
         loadTasks();
-        adapterListOfListener = new ArrayList<IModelListener>();
+        listOfListener = new ArrayList<TaskListControllerListener>();
     }
 
     private void loadTasks()
@@ -133,7 +133,7 @@ public class TaskList
         Task task = get(position);
         task.toggleComplete();
         saveTask(task);
-        updateAll();
+        updateAllListeners();
     }
 
     public Long[] removeCompletedTasks() {
@@ -149,41 +149,41 @@ public class TaskList
         }
 
         taskList.removeAll(completedTasks);
-        updateAll();
+        updateAllListeners();
         return completedIds.toArray(new Long[]{});
     }
 
 
     //Interface to update adapter listeners when some specific changes to taskList happens
 
-    public static interface IModelListener
+    public static interface TaskListControllerListener
     {
-        public void modelChanged(TaskList taskList);
+        public void taskListChanged(TaskListController taskList);
     }
 
-    public void updateAll()
+    public void updateAllListeners()
     {
-        for (IModelListener listener:adapterListOfListener)
+        for (TaskListControllerListener listener: listOfListener)
         {
-            listener.modelChanged(this);
+            listener.taskListChanged(this);
         }
     }
 
-    public void register(IModelListener listener)
+    public void register(TaskListControllerListener listener)
 
     {
-        adapterListOfListener.add(listener);
+        listOfListener.add(listener);
     }
 
 
 
-    public void unregister(IModelListener listener)
+    public void unregister(TaskListControllerListener listener)
     {
-        adapterListOfListener.remove(listener);
+        listOfListener.remove(listener);
     }
     public void unRegisterAll()
     {
-        adapterListOfListener.removeAll(adapterListOfListener);
+        listOfListener.removeAll(listOfListener);
     }
 
 }
