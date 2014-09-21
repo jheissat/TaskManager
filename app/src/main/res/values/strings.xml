@@ -19,6 +19,8 @@
     <string name="app_tag">LocationUpdates</string>
     <string name="app_description">        Displays current address and current or updated location using Location Services</string>
 
+    <string name="project">Project</string>
+    <string name="priority">Priority</string>
 
     <string name="action_filter">Filter</string>
     <string name="action_add">Add</string>

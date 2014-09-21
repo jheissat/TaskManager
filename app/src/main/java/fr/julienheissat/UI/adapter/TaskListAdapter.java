@@ -19,6 +19,7 @@ public class TaskListAdapter extends BaseAdapter implements TaskListController.T
     private TaskListController tasks;
     private Context context;
     private boolean useList = true;
+    private LayoutInflater mInflater;
 
 
     public TaskListAdapter(TaskListController tasks, Context context)
@@ -35,8 +36,11 @@ public class TaskListAdapter extends BaseAdapter implements TaskListController.T
     {
         TaskListItem tli;
 
+        if (mInflater==null)
+        {
 
-        LayoutInflater mInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+         mInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+        }
 
         if (convertView == null)
         {

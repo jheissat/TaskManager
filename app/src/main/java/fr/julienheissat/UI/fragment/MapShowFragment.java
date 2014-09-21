@@ -2,6 +2,7 @@ package fr.julienheissat.ui.fragment;
 
 
 import android.app.Activity;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,8 +12,12 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import fr.julienheissat.application.TaskManagerApplication;
 import fr.julienheissat.modelController.LocationController;
@@ -37,6 +42,7 @@ public class MapShowFragment extends Fragment implements LocationController.Loca
     private LocationController locationController;
     private GoogleMap mMap;
     private TaskManagerApplication app;
+    private boolean addressRetrieved;
 
 
 
@@ -118,11 +124,32 @@ public class MapShowFragment extends Fragment implements LocationController.Loca
 
         // Set the address in the UI
         mAddress.setText(locationController.getLatestAddress());
+
+        if (!addressRetrieved)
+        {
+
+            Location address = locationController.getLocation();
+            LatLng latlng = new LatLng(address.getLatitude(), address.getLongitude());
+            mMap.addMarker(new MarkerOptions()
+                    .position(latlng));
+
+            CameraPosition cameraPosition = new CameraPosition.Builder()
+                    .target(latlng)
+                    .zoom(10)
+                    .build();
+
+            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+            addressRetrieved=true;
+        }
+
+
     }
 
     @Override
     public void locationControllerConnected(LocationController locationController)
     {
+
+
         if (locationController.getLatestAddress()==null)
         {
             locationController.queryLatestAddress();

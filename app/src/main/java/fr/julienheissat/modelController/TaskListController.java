@@ -8,10 +8,13 @@ import java.util.ArrayList;
 
 import static fr.julienheissat.database.TaskSQLiteOpenHelper.TASK_ADDRESS;
 import static fr.julienheissat.database.TaskSQLiteOpenHelper.TASK_COMPLETE;
+import static fr.julienheissat.database.TaskSQLiteOpenHelper.TASK_DATE;
 import static fr.julienheissat.database.TaskSQLiteOpenHelper.TASK_ID;
 import static fr.julienheissat.database.TaskSQLiteOpenHelper.TASK_LATITUDE;
 import static fr.julienheissat.database.TaskSQLiteOpenHelper.TASK_LONGITUDE;
 import static fr.julienheissat.database.TaskSQLiteOpenHelper.TASK_NAME;
+import static fr.julienheissat.database.TaskSQLiteOpenHelper.TASK_PRIORITY;
+import static fr.julienheissat.database.TaskSQLiteOpenHelper.TASK_PROJECT;
 import static fr.julienheissat.database.TaskSQLiteOpenHelper.TASK_TABLE;
 
 /**
@@ -36,7 +39,7 @@ public class TaskListController
         taskList = new ArrayList<Task>();
         Cursor tasksCursor  = database.query(
                 TASK_TABLE,
-                new String[] {TASK_ID, TASK_NAME,TASK_COMPLETE,TASK_ADDRESS,TASK_LATITUDE,TASK_LONGITUDE},
+                new String[] {TASK_ID, TASK_NAME,TASK_COMPLETE,TASK_ADDRESS,TASK_LATITUDE,TASK_LONGITUDE, TASK_PROJECT,TASK_PRIORITY,TASK_DATE},
                 null, null, null, null,String.format("%s,%s",TASK_COMPLETE,TASK_NAME));
         tasksCursor.moveToFirst();
         Task t;
@@ -52,9 +55,12 @@ public class TaskListController
                 String address = tasksCursor.getString(3);
                 float latitude = tasksCursor.getFloat(4);
                 float longitude = tasksCursor.getFloat(5);
+                String project = tasksCursor.getString(6);
+                String priority = tasksCursor.getString(7);
+                long date= tasksCursor.getLong(8);
 
                 t=new Task(name);
-                t.setTask(id,name,complete,address,latitude,longitude);
+                t.setTask(id,name,complete,address,latitude,longitude,project,priority,date);
                 taskList.add(t);
 
             }
@@ -75,6 +81,9 @@ public class TaskListController
         values.put(TASK_ADDRESS,t.getAddress());
         values.put(TASK_LATITUDE,t.getLatitude());
         values.put(TASK_LONGITUDE,t.getLongitude());
+        values.put(TASK_PROJECT,t.getProject());
+        values.put(TASK_PRIORITY,t.getPriority());
+        values.put(TASK_DATE,t.getDate());
 
         long id = database.insert(TASK_TABLE, null, values);
         t.setId(id);
@@ -94,6 +103,9 @@ public class TaskListController
         values.put(TASK_ADDRESS,t.getAddress());
         values.put(TASK_LATITUDE,t.getLatitude());
         values.put(TASK_LONGITUDE,t.getLongitude());
+        values.put(TASK_PROJECT,t.getProject());
+        values.put(TASK_PRIORITY,t.getPriority());
+        values.put(TASK_DATE,t.getDate());
 
         long id = t.getId();
         String where = String.format("%s = ?",TASK_ID);
@@ -145,14 +157,15 @@ public class TaskListController
             {
                 completedIds.add(t.getId());
                 completedTasks.add(t);
+
             }
         }
 
         taskList.removeAll(completedTasks);
+        deleteTasks(completedIds.toArray(new Long[]{}));
         updateAllListeners();
         return completedIds.toArray(new Long[]{});
     }
-
 
     //Interface to update adapter listeners when some specific changes to taskList happens
 
@@ -174,9 +187,6 @@ public class TaskListController
     {
         listOfListener.add(listener);
     }
-
-
-
     public void unregister(TaskListControllerListener listener)
     {
         listOfListener.remove(listener);
