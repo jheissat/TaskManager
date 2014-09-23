@@ -28,7 +28,7 @@ public final class LocationUtils
 {
 
     // Debugging tag for the application
-    public static final String APPTAG = "LocationSample";
+    public static final String GEOCODERTAG = "Location Controller - Geocoder";
 
     // Name of shared preferences repository that stores persistent state
     public static final String SHARED_PREFERENCES =
@@ -54,7 +54,7 @@ public final class LocationUtils
     public static final int UPDATE_INTERVAL_IN_SECONDS = 60;
 
     // A fast interval ceiling
-    public static final int FAST_CEILING_IN_SECONDS = 15;
+    public static final int FAST_CEILING_IN_SECONDS = 60;
 
     // Update interval in milliseconds
     public static final long UPDATE_INTERVAL_IN_MILLISECONDS =

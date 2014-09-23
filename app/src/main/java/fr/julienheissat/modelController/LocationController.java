@@ -1,6 +1,5 @@
 package fr.julienheissat.modelController;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
@@ -13,7 +12,6 @@ import android.util.Log;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.LocationClient;
-import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 
 import java.io.IOException;
@@ -27,19 +25,30 @@ import fr.julienheissat.utils.LocationUtils;
 import fr.julienheissat.utils.PlayConnectionService;
 
 /**
- * Created by juju on 20/09/2014.
+ * Class to connect to google play services and propose several location services to listeners :
+ * - Get latest location
+ * - Get location updates on a regular interval
+ * - Retrieve the address of current location (Geocoder)
+ * - To be instantiated during application startup ?
  */
 public class LocationController implements
         GooglePlayServicesClient.ConnectionCallbacks,
-        GooglePlayServicesClient.OnConnectionFailedListener,
-        LocationListener
-
-
+        GooglePlayServicesClient.OnConnectionFailedListener
+     //   ,LocationListener
 {
+    // Context of the location controller
+
     private final TaskManagerApplication app;
+
+    //List of LocationController listeners
     private ArrayList<LocationControllerListener> listOfListener;
+
+    //Objects to connect to Google services
     private LocationClient mLocationClient;
     private LocationRequest mLocationRequest;
+
+
+    //Location results
     private Location mLatestLocation;
     private String mLatestAddress;
 
@@ -48,170 +57,178 @@ public class LocationController implements
     {
 
         this.app = app;
-
         listOfListener = new ArrayList<LocationControllerListener>();
-
-        mLocationRequest = LocationRequest.create().setInterval(LocationUtils.UPDATE_INTERVAL_IN_MILLISECONDS)
-                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                .setFastestInterval(LocationUtils.FAST_INTERVAL_CEILING_IN_MILLISECONDS);
-
-        mLocationClient = new LocationClient(app, this, this);
-
-        mLocationClient.connect();
-
-    }
-
-    public Location getLocationUpdates()
-    {
-
-        if (PlayConnectionService.servicesConnected(app) && mLocationClient.isConnected())
-        {
-            mLocationClient.requestLocationUpdates(mLocationRequest, this);
-            mLatestLocation = mLocationClient.getLastLocation();
-        }
-
-        return mLatestLocation;
-    }
-
-    public Location getLocation()
-    {
-        if (PlayConnectionService.servicesConnected(app) && mLocationClient.isConnected())
-        {
-            return mLocationClient.getLastLocation();
-        } else
-        {
-            return null;
-        }
+        connectLocationClient();
+        Log.d("LocationController - new instance", "Constructor");
     }
 
 
-    public void stopLocationUpdates()
-    {
-        if (PlayConnectionService.servicesConnected(app) && mLocationClient.isConnected())
-        {
-            mLocationClient.removeLocationUpdates(this);
-        }
-    }
-
-
-    public void disconnect()
-    {
-        mLocationClient.disconnect();
-    }
-
+    /**
+     * Overriding methods from  GooglePlayServicesClient.ConnectionCallbacks
+     */
     @Override
     public void onConnected(Bundle bundle)
     {
+        if (null != mLocationClient && mLocationClient.isConnected())
+        {
+            mLatestLocation = mLocationClient.getLastLocation();
+        }
+        Log.i("LocationController - onConnected", "Bundle:" + bundle);
 
         updateAllListenersOnConnection();
-
+        disconnectLocationClient();
     }
+
 
     @Override
     public void onDisconnected()
     {
-
+        Log.i("LocationController - onDisconnected", "Disconnection");
+        updateAllListenersOnDisconnection();
     }
 
 
-    @Override
-    public void onLocationChanged(Location location)
-    {
-        updateAllListeners();
-
-    }
-
-
+    /**
+     * Overriding method from GooglePlayServicesClient.OnConnectionFailedListener
+     */
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult)
     {
         if (connectionResult.hasResolution())
         {
-
+            Log.i("LocationController - onConnectionFailed", "connectionResultHasResolution=" + connectionResult);
         } else
         {
-
+            Log.i("LocationController - onConnectionFailed", "connectionResultNotHasResolution=" + connectionResult);
         }
     }
 
 
-    public String getLatestAddress ()
+    /**
+     * Overriding method from LocationListener
+     */
+//    @Override
+//    public void onLocationChanged(Location location)
+//    {
+//        Log.i("LocationController - onLocationChanged", "Location:"+location);
+//        mLatestLocation = mLocationClient.getLastLocation();
+//        updateAllListeners();
+//
+//    }
+
+
+    /**
+     * Methods to connect/disconnect to location client. Methods to request and stop location updates to google play services
+     */
+    public void connectLocationClient()
     {
-       return mLatestAddress;
+        if (mLocationClient == null)
+        {
+            mLocationClient = new LocationClient(app, this, this);
+        }
+        if (!mLocationClient.isConnected())
+        {
+            mLocationClient.connect();
+        }
+    }
+
+    public void disconnectLocationClient()
+    {
+        if (null != mLocationClient)
+        {
+            mLocationClient.disconnect();
+            Log.i("LocationController - disconnectionLocationClient", "location client disconnected");
+        }
+    }
+
+//    public void requestLocationUpdates()
+//    {
+//
+//        if (PlayConnectionService.servicesConnected(app) && mLocationClient.isConnected())
+//        {
+//            if (mLocationRequest == null)
+//            {
+//                mLocationRequest = LocationRequest.create().setInterval(LocationUtils.UPDATE_INTERVAL_IN_MILLISECONDS)
+//                        .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+//                        .setFastestInterval(LocationUtils.FAST_INTERVAL_CEILING_IN_MILLISECONDS);
+//            }
+//
+//            mLocationClient.requestLocationUpdates(mLocationRequest, this);
+//        } else
+//        {
+//            Log.i("LocationController - requestLocationUpdates not working", "Connection to google play" + PlayConnectionService.servicesConnected(app));
+//        }
+//
+//    }
+
+//    public void stopLocationUpdates()
+//    {
+//        if (null != mLocationClient)
+//        {
+//            mLocationClient.removeLocationUpdates(this);
+//        }
+//    }
+
+    /**
+     * Methods to retrieve location and address
+     */
+
+
+    public Location getLatestLocation()
+    {
+        return mLatestLocation;
     }
 
 
-    @SuppressLint("NewApi")
-    public void queryLatestAddress()
+    public String getLatestAddress()
+    {
+        return mLatestAddress;
+    }
+
+
+    /**
+     * Method to ask for address based on current location using geocoder
+     */
+
+
+    public boolean queryLatestAddress()
     {
 
         // In Gingerbread and later, use Geocoder.isPresent() to see if a geocoder is available.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD && !Geocoder.isPresent())
         {
-            // No geocoder is present. Issue an error message
-            //   Toast.makeText(activity, R.string.no_geocoder_available, Toast.LENGTH_LONG).show();
-            return;
+            Log.e("LocationController - queryLatestAddress", "Geocoder is present:" + Geocoder.isPresent());
+            return false;
         }
 
-        if (PlayConnectionService.servicesConnected(app))
+        else if (PlayConnectionService.servicesConnected(app))
         {
 
-            // Get the current location
-            Location currentLocation = mLocationClient.getLastLocation();
 
-            // Turn the indefinite activity indicator on
-//            mActivityIndicator.setVisibility(View.VISIBLE);
 
             // Start the background task
-            new GetAddressTask(app).execute(currentLocation);
-        }
-    }
+           if (mLatestLocation !=null){
 
-    public void updateAllListeners()
-    {
-        for (LocationControllerListener listener : listOfListener)
+                    new GetAddressTask(app).execute(mLatestLocation);
+                    return true;
+             }
+            else
+           {
+               return false;
+           }
+        }
+
+        else
         {
-            listener.locationChanged(this);
-        }
-    }
-
-    public void updateAllListenersOnConnection()
-    {
-        for (LocationControllerListener listener : listOfListener)
-        {
-            listener.locationControllerConnected(this);
-        }
-    }
-
-
-    public void register(LocationControllerListener listener)
-
-    {
-        if (listOfListener.size() == 0)
-        {
-            getLocationUpdates();
+            Log.e("LocationController - queryLatestAddress", "Connection services connection:" + PlayConnectionService.servicesConnected(app));
+            return false;
         }
 
-        listOfListener.add(listener);
-    }
 
-    public void unregister(LocationControllerListener listener)
-    {
-        listOfListener.remove(listener);
-    }
 
-    public void unRegisterAll()
-    {
-        listOfListener.removeAll(listOfListener);
     }
 
 
-    public static interface LocationControllerListener
-    {
-        public void locationChanged(LocationController locationController);
-
-        public void locationControllerConnected(LocationController locationController);
-    }
 
     protected class GetAddressTask extends AsyncTask<Location, Void, String>
     {
@@ -245,8 +262,8 @@ public class LocationController implements
             Geocoder geocoder = new Geocoder(localContext, Locale.getDefault());
 
             // Get the current location from the input parameter list
-           
-                Location location = params[0];
+
+            Location location = params[0];
 
             // Create a list to contain the result address
             List<Address> addresses = null;
@@ -260,15 +277,15 @@ public class LocationController implements
                  * longitude of the current location. Return at most 1 address.
                  */
                 addresses = geocoder.getFromLocation(location.getLatitude(),
-                        location.getLongitude(), 1
-                );
+                        location.getLongitude(), 1);
+                Log.i("LocationController - GetAddressTask", "Number of addresses:" + addresses.size());
 
                 // Catch network or other I/O problems.
             } catch (IOException exception1)
             {
 
                 // Log an error and return an error message
-                Log.e(LocationUtils.APPTAG, app.getString(R.string.IO_Exception_getFromLocation));
+                Log.e(LocationUtils.GEOCODERTAG, app.getString(R.string.IO_Exception_getFromLocation));
 
                 // print the stack trace
                 exception1.printStackTrace();
@@ -287,7 +304,7 @@ public class LocationController implements
                         location.getLongitude()
                 );
                 // Log the error and print the stack trace
-                Log.e(LocationUtils.APPTAG, errorString);
+                Log.e(LocationUtils.GEOCODERTAG, errorString);
                 exception2.printStackTrace();
 
                 //
@@ -334,10 +351,80 @@ public class LocationController implements
         @Override
         protected void onPostExecute(String addressFound)
         {
-
             mLatestAddress = addressFound;
-            updateAllListeners();
+            updateAllListenersOnAddressChanged();
+        }
+    }
 
+
+    /**
+     * Listener Interface with registration methods
+     */
+    public static interface LocationControllerListener
+    {
+        public void locationChanged(LocationController locationController);
+
+        public void locationControllerConnected(LocationController locationController);
+
+        public void locationControllerDisConnected(LocationController locationController);
+
+        public void addressChanged(LocationController locationController);
+    }
+    /**
+     * Registration methods
+     */
+    public void register(LocationControllerListener listener)
+
+    {
+
+        listOfListener.add(listener);
+        Log.i("LocationControllerListener", "registered" + listener);
+    }
+
+    public void unregister(LocationControllerListener listener)
+    {
+        listOfListener.remove(listener);
+        Log.i("LocationControllerListener", "unregistered" + listener);
+    }
+
+    public void unregisterAll()
+    {
+        listOfListener.removeAll(listOfListener);
+        Log.i("LocationControllerListener", "unregister all" + listOfListener);
+    }
+
+    /**
+     * Update methods to listeners
+     */
+    public void updateAllListeners()
+    {
+        for (LocationControllerListener listener : listOfListener)
+        {
+            listener.locationChanged(this);
+        }
+    }
+
+    public void updateAllListenersOnConnection()
+    {
+        for (LocationControllerListener listener : listOfListener)
+        {
+            listener.locationControllerConnected(this);
+        }
+    }
+
+    public void updateAllListenersOnDisconnection()
+    {
+        for (LocationControllerListener listener : listOfListener)
+        {
+            listener.locationControllerDisConnected(this);
+        }
+    }
+
+    public void updateAllListenersOnAddressChanged()
+    {
+        for (LocationControllerListener listener : listOfListener)
+        {
+            listener.locationControllerDisConnected(this);
         }
     }
 

@@ -18,6 +18,8 @@ public class PlayConnectionService
     * Method to check if app is connected to Google Play services
     */
 
+    public static final String SERVICECONNECTED = "PlayConnectionService";
+
     public static boolean servicesConnected(Context thisContext)
     {
 
@@ -28,15 +30,14 @@ public class PlayConnectionService
         if (ConnectionResult.SUCCESS == resultCode)
         {
             // In debug mode, log the status
-            Log.d(LocationUtils.APPTAG, thisContext.getString(R.string.play_services_available));
+            Log.d(SERVICECONNECTED, thisContext.getString(R.string.play_services_available));
 
-            // Continue
-            return true;
-            // Google Play services was not available for some reason
-        } else
+         return true;
+        }
+
+        else
         {
-            // Display an error dialog
-
+            Log.e(SERVICECONNECTED, thisContext.getString(R.string.play_services_unavailable));
         }
         return false;
     }
