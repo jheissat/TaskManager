@@ -18,10 +18,12 @@
     </item>
     <item>
         <shape>
-            <gradient
-                android:startColor="@color/main_color"
-                android:endColor="@color/main_color_light"
-                android:angle="270" />
+            <solid
+                android:color="@color/main_color" />
+            <!--<gradient-->
+                <!--android:startColor="@color/main_color"-->
+                <!--android:endColor="@color/main_color_light"-->
+                <!--android:angle="270" />-->
 
             <corners
                 android:radius="4dp" />
