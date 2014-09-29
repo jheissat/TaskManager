@@ -86,6 +86,15 @@ public class MapShowFragment extends Fragment implements LocationController.Loca
         return fragment;
     }
 
+    public static MapShowFragment newInstance()
+    {
+        Log.d(MAPSHOWFRAGMENTLIFECYCLE, "new instance");
+
+        MapShowFragment fragment = new MapShowFragment();
+
+        return fragment;
+    }
+
 
     @Override
     public void onAttach(Activity activity)
@@ -206,6 +215,7 @@ public class MapShowFragment extends Fragment implements LocationController.Loca
     public void onDetach()
     {
         super.onDetach();
+
         // locationController.unregister(this);
         mListener = null;
     }

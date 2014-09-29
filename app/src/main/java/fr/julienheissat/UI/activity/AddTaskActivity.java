@@ -10,18 +10,18 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.Date;
 
 import fr.julienheissat.application.TaskManagerApplication;
 import fr.julienheissat.modelController.Task;
 import fr.julienheissat.taskmanager.R;
+import fr.julienheissat.ui.adapter.PriorityListAdapter;
+import fr.julienheissat.ui.adapter.ProjectListAdapter;
 
 
 public class AddTaskActivity extends ActionBarActivity
@@ -40,6 +40,9 @@ public class AddTaskActivity extends ActionBarActivity
     private Button addLocationButton;
     private TextView addressText;
     private Task t;
+
+    private String[] priorityTitles;
+    private String[] projectTitles;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -160,26 +163,18 @@ public class AddTaskActivity extends ActionBarActivity
     public void setupSpinners() {
 
         taskProjectSpinner = (Spinner) findViewById(R.id.project_spinner);
+        projectTitles = new String[]{"Personal", "Work", "Family"};
 
-        ArrayList<String> projectList = new ArrayList<String>();
-        projectList.add("Project:");
-        projectList.add("Personal");
-        projectList.add("Work");
-        projectList.add("Family");
+        taskProjectSpinner.setAdapter(new ProjectListAdapter(this,R.layout.item_project_list,projectTitles));
 
-        ArrayAdapter<String> dataProjectAdapter = new ArrayAdapter<String>
-                (this, android.R.layout.simple_spinner_item,projectList);
-
-        dataProjectAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        taskProjectSpinner.setAdapter(dataProjectAdapter);
         taskProjectSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
         {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l)
             {
 
-                String sProject=taskProjectSpinner.getSelectedItem().toString();
-                if(sProject!="Project:")
+                String sProject = taskProjectSpinner.getSelectedItem().toString();
+                if (sProject != "Project:")
                 {
                     t.setProject(sProject);
                 }
@@ -195,29 +190,15 @@ public class AddTaskActivity extends ActionBarActivity
 
 
         taskPrioritySpinner = (Spinner) findViewById(R.id.priority_spinner);
-
-        ArrayList<String> priorityList = new ArrayList<String>();
-        priorityList.add("Priority:");
-        priorityList.add("1.Now");
-        priorityList.add("2.Next");
-        priorityList.add("3.Soon");
-        priorityList.add("4.Later");
-        priorityList.add("5.Someday");
-        priorityList.add("6.Waiting");
-
-        ArrayAdapter<String> dataPriorityAdapter = new ArrayAdapter<String>
-                (this, android.R.layout.simple_spinner_item,priorityList);
-
-        dataPriorityAdapter.setDropDownViewResource (android.R.layout.simple_spinner_dropdown_item);
-        taskPrioritySpinner.setAdapter(dataPriorityAdapter);
-        taskPrioritySpinner.setPrompt("lalala");
+        priorityTitles = getResources().getStringArray(R.array.priority_title_list);
+        taskPrioritySpinner.setAdapter(new PriorityListAdapter(this,R.layout.item_priority_list,priorityTitles));
         taskPrioritySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
         {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l)
             {
-                String sPriority=taskPrioritySpinner.getSelectedItem().toString();
-                if(sPriority!="Priority:")
+                String sPriority = taskPrioritySpinner.getSelectedItem().toString();
+                if (sPriority != "Priority:")
                 {
                     t.setPriority(sPriority);
                 }

@@ -25,15 +25,8 @@
     android:textStyle="bold"
     android:gravity="center_vertical"
     android:checkMark="?android:attr/listChoiceIndicatorMultiple"
-    />
+    android:checked="true"/>
 
-    <!--<TextView-->
-        <!--android:paddingLeft="@dimen/task_horizontal_margin"-->
-        <!--android:paddingRight="@dimen/task_horizontal_margin"-->
-        <!--android:id="@+id/address_text_list"-->
-        <!--android:layout_width="fill_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:visibility="gone" />-->
 
     <!--Project-->
     <TextView
@@ -41,8 +34,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/list_title"
-        android:layout_marginTop="3dp"
-        android:layout_toRightOf="@+id/list_image"
+        android:layout_toRightOf="@id/list_image"
         android:textColor="@color/color_list_project"
         android:textSize="@dimen/dim_project"
         android:textStyle="bold" />

@@ -46,6 +46,10 @@ public class TaskListFragment extends Fragment implements AbsListView.OnItemClic
         return fragment;
     }
 
+    public static TaskListFragment newInstance() {
+        TaskListFragment fragment = new TaskListFragment();
+        return fragment;
+    }
 
     public TaskListFragment() {}
 

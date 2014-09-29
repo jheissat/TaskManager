@@ -46,12 +46,12 @@ public class TaskListAdapter extends BaseAdapter implements TaskListController.T
         {
             if (useList)
             {
-                tli = (TaskListItem) mInflater.inflate(R.layout.view_task_list_item, null);
+                tli = (TaskListItem) mInflater.inflate(R.layout.item_view_task_list, null);
 
             } else
 
             {
-                tli = (TaskListItem) mInflater.inflate(R.layout.view_task_grid_item, null);
+                tli = (TaskListItem) mInflater.inflate(R.layout.item_view_task_grid, null);
             }
 
         } else

@@ -23,6 +23,7 @@ import static fr.julienheissat.database.TaskSQLiteOpenHelper.TASK_TABLE;
 public class TaskListController
 {
 
+
     private ArrayList<Task> taskList;
     private SQLiteDatabase database;
     private ArrayList<TaskListControllerListener> listOfListener;
@@ -89,6 +90,7 @@ public class TaskListController
         t.setId(id);
 
         taskList.add(t);
+        updateAllListeners();
 
     }
 

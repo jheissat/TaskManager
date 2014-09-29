@@ -25,6 +25,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/task_address"
+        android:layout_margin="5dp"
         android:text="@string/map_this_address"
     />
 
@@ -43,6 +44,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:layout_margin="5dp"
         android:text="@string/use_this_location"
         />
 

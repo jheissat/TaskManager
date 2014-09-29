@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <array name="nav_drawer_icons">
+        <item>@drawable/green_ic_project</item>
+        <item>@drawable/green_ic_action_add_tag</item>
+        <item>@drawable/green_ic_social_links</item>
+        <item>@drawable/green_ic_social_add</item>
+        <item>@drawable/green_ic_action_archive</item>
+        <item>@drawable/green_ic_action_content_edit</item>
+    </array>
+
+
+    <array name="priority_icon_list">
+        <item>@drawable/ic_p1</item>
+        <item>@drawable/ic_p2</item>
+        <item>@drawable/ic_p3</item>
+        <item>@drawable/ic_p4</item>
+        <item>@drawable/ic_p5</item>
+        <item>@drawable/ic_p6</item>
+    </array>
+
+
+
+
+
+
+</resources>

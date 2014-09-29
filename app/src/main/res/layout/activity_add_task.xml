@@ -1,71 +1,236 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="fr.julienheissat.ui.activity.AddTaskActivity">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                xmlns:tools="http://schemas.android.com/tools"
+                tools:context="fr.julienheissat.ui.activity.AddTaskActivity">
 
-    <TextView
-        android:id="@+id/task_title"
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_above="@+id/add_bottom">
+
+    <LinearLayout
         android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical"
+
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+       >
+
+
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="0.2"
+                android:layout_height="wrap_content"
+                android:text="@string/task_title"
+                android:textColor="@color/main_color"
+                android:textStyle="bold"/>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="0.8"
+                android:layout_height="wrap_content"
+                android:background="@drawable/round_rectangle"
+                android:gravity="bottom"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/task_name"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:paddingBottom="@dimen/box_vertical_margin"
+                android:paddingTop="@dimen/box_vertical_margin"
+                android:spinnerMode="dialog"/>
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:orientation="horizontal">
+
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="0.2"
+                android:layout_height="wrap_content"
+                android:text="@string/project_title"
+                android:textColor="@color/main_color"
+                android:textStyle="bold"/>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="0.8"
+                android:layout_height="wrap_content"
+                android:background="@drawable/round_rectangle"
+                android:gravity="bottom"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:orientation="horizontal">
+
+            <Spinner
+
+                android:id="@+id/project_spinner"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:paddingBottom="@dimen/box_vertical_margin"
+                android:paddingTop="@dimen/box_vertical_margin"
+                android:prompt="@string/project"
+                android:spinnerMode="dialog"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="0.2"
+                android:layout_height="wrap_content"
+                android:text="@string/level_of_priority"
+                android:textColor="@color/main_color"
+                android:textStyle="bold"/>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="0.8"
+                android:layout_height="wrap_content"
+                android:background="@drawable/round_rectangle"
+                android:gravity="bottom"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:orientation="horizontal">
+
+            <Spinner
+
+                android:id="@+id/priority_spinner"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="@dimen/box_vertical_margin"
+                android:paddingTop="@dimen/box_vertical_margin"
+                android:drawSelectorOnTop="true"
+                android:layout_gravity="bottom"
+                android:prompt="@string/priority"
+                android:spinnerMode="dialog"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="0.2"
+                android:layout_height="wrap_content"
+                android:text="@string/location"
+                android:textColor="@color/main_color"
+                android:textStyle="bold"/>
+
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="0.8"
+                android:layout_height="wrap_content"
+                android:background="@drawable/round_rectangle"
+                android:gravity="bottom"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/add_location_button"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/activity_horizontal_margin"
+
+                    android:onClick="addLocationButtonClicked"
+                    android:paddingBottom="5dp"
+                    android:paddingTop="5dp"
+                    android:text="@string/add_location_to_task"/>
+
+                <TextView
+                    android:id="@+id/address_text"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"/>
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <!--<Button-->
+        <!--android:id="@+id/add_button"-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="@string/add_task" />-->
+
+
+        <!--<Button-->
+        <!--android:id="@+id/cancel_button"-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="@string/cancel" />-->
+
+
+
+    </LinearLayout>
+    </ScrollView>
+    <!-- Save & Cancel button -->
+
+    <LinearLayout
+        android:id="@id/add_bottom"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/add_task" />
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom"
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        >
 
-    <EditText
-        android:id="@+id/task_name"
-        android:layout_width="fill_parent"
-        android:spinnerMode="dialog"
-        android:layout_height="wrap_content" />
+        <Button
+            android:id="@+id/add_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_weight="1"
+            android:layout_margin="5dp"
+            android:text="@string/add_task"/>
 
-    <Spinner
-
-        android:id="@+id/project_spinner"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:spinnerMode="dialog"
-        android:prompt="@string/project"/>
-
-
-    <Spinner
-
-        android:id="@+id/priority_spinner"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:prompt="@string/priority"/>
-
-
-
-
-    <TextView
-        android:id="@+id/address_text"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone" />
-
-
-    <Button
-        android:id="@+id/add_location_button"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/add_location_to_task"
-        android:onClick="addLocationButtonClicked"/>
-
-    <Button
-        android:id="@+id/add_button"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/add_task" />
-
-
-    <Button
-        android:id="@+id/cancel_button"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/cancel" />
-
-
-</LinearLayout>
+        <Button
+            android:id="@+id/cancel_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_weight="1"
+            android:layout_margin="5dp"
+            android:text="@string/cancel"/>
+    </LinearLayout>
+</RelativeLayout>

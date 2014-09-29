@@ -42,15 +42,15 @@
 
     <item name="android:spinnerItemStyle">@style/SpinnerItemgreen</item>
         
-        <item name="actionBarItemBackground">@drawable/selectable_background_green</item>
-        <item name="popupMenuStyle">@style/PopupMenu.Green</item>
-        <item name="dropDownListViewStyle">@style/DropDownListView.Green</item>
-        <item name="actionBarTabStyle">@style/ActionBarTabStyle.Green</item>
-        <item name="actionDropDownStyle">@style/DropDownNav.Green</item>
-        <item name="actionBarStyle">@style/ActionBar.Solid.Green</item>
-        <item name="actionModeBackground">@drawable/cab_background_top_green</item>
-        <item name="actionModeSplitBackground">@drawable/cab_background_bottom_green</item>
-        <item name="actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Green</item>
+    <item name="actionBarItemBackground">@drawable/selectable_background_green</item>
+     <item name="popupMenuStyle">@style/PopupMenu.Green</item>
+    <item name="dropDownListViewStyle">@style/DropDownListView.Green</item>
+    <item name="actionBarTabStyle">@style/ActionBarTabStyle.Green</item>
+    <item name="actionDropDownStyle">@style/DropDownNav.Green</item>
+    <item name="actionBarStyle">@style/ActionBar.Solid.Green</item>
+    <item name="actionModeBackground">@drawable/cab_background_top_green</item>
+   <item name="actionModeSplitBackground">@drawable/cab_background_bottom_green</item>
+   <item name="actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Green</item>
 
     </style>
 

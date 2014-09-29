@@ -8,22 +8,23 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.astuetz.PagerSlidingTabStrip;
+
 import java.util.ArrayList;
 
 import fr.julienheissat.taskmanager.R;
-import fr.julienheissat.ui.MainTabListener;
 import fr.julienheissat.ui.adapter.NavDrawerListAdapter;
+import fr.julienheissat.ui.adapter.TabPagerAdapter;
 import fr.julienheissat.ui.fragment.MapShowFragment;
 import fr.julienheissat.ui.fragment.TaskListFragment;
 import fr.julienheissat.ui.views.NavDrawerItem;
@@ -34,7 +35,7 @@ public class MainActivity extends ActionBarActivity implements
         MapShowFragment.OnMapFragmentInteractionListener
 {
 
-    ActionBar.Tab tab1, tab2;
+
 
 
     private DrawerLayout mDrawerLayout;
@@ -54,6 +55,10 @@ public class MainActivity extends ActionBarActivity implements
     private ArrayList<NavDrawerItem> navDrawerItems;
     private NavDrawerListAdapter adapter;
 
+    private PagerSlidingTabStrip tabs;
+    private ViewPager pager;
+    private int currentColor = 0xFF8adcb3;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -62,10 +67,15 @@ public class MainActivity extends ActionBarActivity implements
         // Notice that setContentView() is not used, because we use the root
         // android.R.id.content as the container for each fragment
 
-        setupActionBar(savedInstanceState);
+        setupPagerView(savedInstanceState);
         setupNavigationDrawer(savedInstanceState);
         // setup action bar for tabs
         }
+
+
+
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -129,25 +139,42 @@ public class MainActivity extends ActionBarActivity implements
 
 
 
-    protected void setupActionBar (Bundle savedInstanceState)
+//    protected void setupActionBar (Bundle savedInstanceState)
+//    {
+//        ActionBar actionBar = getSupportActionBar();
+//        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+//        actionBar.setDisplayShowTitleEnabled(false);
+//
+//        tab1 = actionBar.newTab()
+//                .setText(R.string.list_title)
+//                .setTabListener(new MainTabListener<TaskListFragment>(
+//                        this, "list", TaskListFragment.class));
+//        actionBar.addTab(tab1);
+//
+//        tab2 = actionBar.newTab()
+//                .setText(R.string.map_title)
+//                .setTabListener(new MainTabListener<MapShowFragment>(
+//                        this, "map", MapShowFragment.class));
+//        actionBar.addTab(tab2);
+//
+//    }
+
+    protected void setupPagerView (Bundle savedInstanceState)
     {
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        actionBar.setDisplayShowTitleEnabled(false);
+        tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
+        pager = (ViewPager) findViewById(R.id.container);
 
-        tab1 = actionBar.newTab()
-                .setText(R.string.list_title)
-                .setTabListener(new MainTabListener<TaskListFragment>(
-                        this, "list", TaskListFragment.class));
-        actionBar.addTab(tab1);
+        FragmentPagerAdapter adapter = new TabPagerAdapter(getSupportFragmentManager());
 
-        tab2 = actionBar.newTab()
-                .setText(R.string.map_title)
-                .setTabListener(new MainTabListener<MapShowFragment>(
-                        this, "map", MapShowFragment.class));
-        actionBar.addTab(tab2);
+        ViewPager pager = (ViewPager)findViewById(R.id.container);
+        pager.setAdapter(adapter);
+        tabs.setIndicatorColor(currentColor);
+        tabs.setViewPager(pager);
+
 
     }
+
+
 
     protected void setupNavigationDrawer (Bundle savedInstanceState) {
 
@@ -194,9 +221,9 @@ public class MainActivity extends ActionBarActivity implements
         getSupportActionBar().setHomeButtonEnabled(true);
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
-                R.drawable.green_ic_navigation_drawer, //nav menu toggle icon
-                R.string.app_name, // nav drawer open - description for accessibility
-                R.string.app_name // nav drawer close - description for accessibility
+                R.drawable.green_ic_navigation_drawer,
+                R.string.drawer_open, // nav drawer open - description for accessibility
+                R.string.drawer_close // nav drawer close - description for accessibility
         ){
             public void onDrawerClosed(View view) {
                 getSupportActionBar().setTitle(mTitle);
@@ -219,6 +246,10 @@ public class MainActivity extends ActionBarActivity implements
 //        }
 
         mDrawerList.setOnItemClickListener(new SlideMenuClickListener());
+
+        if(savedInstanceState == null) {
+            displayView(0);
+        }
 
     }
 
@@ -260,20 +291,20 @@ public class MainActivity extends ActionBarActivity implements
                 break;
         }
 
-        if (fragment != null) {
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction()
-                    .replace(R.id.container, fragment).commit();
-
-            // update selected item and title, then close the drawer
-            mDrawerList.setItemChecked(position, true);
-            mDrawerList.setSelection(position);
-            setTitle(navMenuTitles[position]);
-            mDrawerLayout.closeDrawer(mDrawerList);
-        } else {
-            // error in creating fragment
-            Log.e("MainActivity", "Error in creating fragment");
-        }
+//        if (fragment != null) {
+//            FragmentManager fragmentManager = getSupportFragmentManager();
+//            fragmentManager.beginTransaction()
+//                    .replace(R.id.container, fragment).commit();
+//
+//            // update selected item and title, then close the drawer
+//            mDrawerList.setItemChecked(position, true);
+//            mDrawerList.setSelection(position);
+//            setTitle(navMenuTitles[position]);
+//            mDrawerLayout.closeDrawer(mDrawerList);
+//        } else {
+//            // error in creating fragment
+//            Log.e("MainActivity", "Error in creating fragment");
+//        }
     }
 
 

@@ -3,10 +3,13 @@ package fr.julienheissat.ui.views;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.widget.CheckedTextView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import java.util.HashMap;
 
 import fr.julienheissat.modelController.Task;
 import fr.julienheissat.taskmanager.R;
@@ -39,7 +42,7 @@ public class TaskListItem extends RelativeLayout {
         checkbox = (CheckedTextView) findViewById(R.id.list_title);
         projectView = (TextView) findViewById(R.id.list_project);
         dateView = (TextView) findViewById(R.id.list_date);
-//        addressText = (TextView) findViewById(R.id.address_text_list);
+
 
     }
 
@@ -49,26 +52,33 @@ public class TaskListItem extends RelativeLayout {
 
     public void setTask(Task task) {
         this.task = task;
+        Drawable draw;
+        String taskPriorityNumber;
         checkbox.setText(task.getName());
         checkbox.setChecked(task.isComplete());
 
+        HashMap<String,Integer> mapPriorityImage= new HashMap<String,Integer>();
+        mapPriorityImage.put("P1",R.drawable.ic_p1);
+        mapPriorityImage.put("P2",R.drawable.ic_p2);
+        mapPriorityImage.put("P3",R.drawable.ic_p3);
+        mapPriorityImage.put("P4",R.drawable.ic_p4);
+        mapPriorityImage.put("P5",R.drawable.ic_p5);
+        mapPriorityImage.put("P6",R.drawable.ic_p6);
 
-        Drawable draw = getResources().getDrawable(R.drawable.priority_icon);
-        imagePriority.setImageDrawable(draw);
+        if (task.getPriority()!=null)
+        {
+            taskPriorityNumber = task.getPriority().substring(0, 2);
+            Log.d("TaskListItem - SetTask", "String of task:" + taskPriorityNumber);
+            if (mapPriorityImage.containsKey(taskPriorityNumber))
+            {
+                draw = getResources().getDrawable(mapPriorityImage.get(taskPriorityNumber));
+                imagePriority.setImageDrawable(draw);
 
+            }
+        }
         projectView.setText(task.getProject());
         dateView.setText(task.getDateString());
 
-
-//        if (task.hasAddress())
-//        {
-//            addressText.setText(task.getAddress());
-//            addressText.setVisibility(View.VISIBLE);
-//        }
-//        else
-//        {
-//            addressText.setVisibility(View.GONE);
-//        }
 
     }
 }
